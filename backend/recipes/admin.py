@@ -40,7 +40,6 @@ class IngredientAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(IngredientInRecipe)
 class IngredientInRecipeInlineAdmin(admin.TabularInline):
     model = IngredientInRecipe
 
