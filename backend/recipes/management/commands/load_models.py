@@ -17,14 +17,14 @@ class Command(BaseCommand):
         try:
             self.load_models()
         except FileNotFoundError:
-            print(f'Файл {self.FILE_PATH} не найден')
+            print(f'Файл {self._FILE_PATH} не найден')
         except Exception as err:
             print(f'Не удалось загрузить данные: {err}')
         else:
             print('Данные успешно добавлены в базу данных Foodgram.')
 
     def load_models(self):
-        with open(self._FILE_PATH, 'r', encoding='UTF-8') as file:
+        with open(self._FILE_PATH, mode='r', encoding='UTF-8') as file:
             data = json.load(file)
             Ingredient.objects.bulk_create(
                 [Ingredient(name=ingredient['name'],
