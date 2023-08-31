@@ -1,11 +1,14 @@
 from pathlib import Path
 
+from decouple import AutoConfig, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-4hi$g)!e3ctx!#k-^g1!__s7zp8b+ir$#corac2+9(_63zg1ya'
-DEBUG = True
-ALLOWED_HOSTS = []
+config = AutoConfig(search_path=BASE_DIR)
+
+SECRET_KEY = config('SECRET_KEY', default='test1234', cast=str)
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['*'], cast=Csv())
 
 
 INSTALLED_APPS = [
@@ -15,6 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'users.apps.UsersConfig',
+    'recipes.apps.RecipesConfig',
 ]
 
 MIDDLEWARE = [
