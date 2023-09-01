@@ -96,3 +96,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Константы
 
 MAX_LENGTH_FILED = 200
+PAGE_SIZE = 6
