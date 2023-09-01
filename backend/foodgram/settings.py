@@ -10,7 +10,6 @@ SECRET_KEY = config('SECRET_KEY', default='test1234', cast=str)
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['*'], cast=Csv())
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,8 +18,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'djoser',
+
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -97,3 +102,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MAX_LENGTH_FILED = 200
 PAGE_SIZE = 6
+
+# Авторизация и токены
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPaginator',
+    'PAGE_SIZE': PAGE_SIZE,
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ('api.permissions.IsOwnerOrReadOnly',),
+        'user_list': ('rest_framework.permissions.AllowAny',),
+    },
+    'SERIALIZERS': {
+        'current_user': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+    },
+}
