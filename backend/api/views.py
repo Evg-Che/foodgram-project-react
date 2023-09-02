@@ -15,13 +15,13 @@ from api.filters import (
     RecipeFilter
 )
 from api.mixins import CustomViewSetMixin
-from api.pagination import Paginator
+from api.pagination import CustomPaginator
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from api.serializers import (
     CreateRecipeSerializer,
     CustomUserSerializer,
     FavoriteSerializer,
-    GetRecipeSerializer,
+    GetRecipeListSerializer,
     IngredientSerializer,
     ShoppingListSerializer,
     SubscriptionSerializer,
@@ -66,7 +66,7 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     http_method_names = ['get', 'post', 'patch', 'delete']
-    pagination_class = Paginator
+    pagination_class = CustomPaginator
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
@@ -76,7 +76,7 @@ class RecipeViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return GetRecipeSerializer
+            return GetRecipeListSerializer
         return CreateRecipeSerializer
 
     @action(detail=True, methods=['POST'])
@@ -159,7 +159,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = Paginator
+    pagination_class = CustomPaginator
     lookup_field = 'id'
 
     @action(detail=True, methods=['POST', 'DELETE'])
@@ -191,7 +191,8 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=False, methods=['GET'])
     def subscriptions(self, request):
-        subscriber = Subscription.objects.filter(user=request.user)
+        subscriber = Subscription.objects.filter(
+            user=request.user).select_related('author')
         page = self.paginate_queryset(subscriber)
         serializer = SubscriptionSerializer(
             page,

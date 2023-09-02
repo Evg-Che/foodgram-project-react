@@ -20,16 +20,12 @@ from users.models import Subscription, User
 
 
 class TagSerializer(ModelSerializer):
-    """Cериализатор тегов."""
-
     class Meta:
         model = Tag
         fields = '__all__'
 
 
 class IngredientSerializer(ModelSerializer):
-    """Cериализатор ингредиентов."""
-
     class Meta:
         model = Ingredient
         fields = '__all__'
@@ -223,8 +219,7 @@ class GetRecipeListSerializer(ModelSerializer):
 
     def get_ingredients(self, obj):
         ingredients = IngredientInRecipe.objects.filter(
-            recipe=obj
-        )
+            recipe=obj).select_related('ingredient')
         return IngredientInRecipeSerializer(
             ingredients,
             many=True
